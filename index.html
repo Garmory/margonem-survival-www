@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Margonem Survival</title>
+<meta name="description" content="Margonem Survival — przetrwaj noc przy ognisku. Test zamknięty.">
+<link rel="icon" type="image/png" href="favicon.png">
+<style>
+  :root {
+    --tlo: #14100a;
+    --plytka: #1c140b;
+    --zloto: #ebc76b;
+    --tekst: #e8d9b0;
+    --tekst-cichy: #a89877;
+    --obrys: rgba(235, 199, 107, 0.35);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--tlo);
+    color: var(--tekst);
+    font-family: Georgia, "Times New Roman", serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .scena {
+    width: 100%;
+    min-height: 100vh;
+    background:
+      linear-gradient(rgba(20, 16, 10, 0.55), rgba(20, 16, 10, 0.86) 70%, var(--tlo)),
+      url("tlo.jpg") center / cover no-repeat;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px 64px;
+    text-align: center;
+  }
+  h1 {
+    font-size: clamp(2rem, 6vw, 3.6rem);
+    letter-spacing: 0.14em;
+    color: var(--zloto);
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
+    text-transform: uppercase;
+  }
+  .haslo {
+    margin-top: 14px;
+    font-size: clamp(1rem, 2.4vw, 1.25rem);
+    color: var(--tekst);
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.9);
+  }
+  .znaczek {
+    display: inline-block;
+    margin-top: 26px;
+    padding: 6px 18px;
+    border: 1px solid var(--obrys);
+    border-radius: 4px;
+    background: rgba(28, 20, 11, 0.82);
+    color: var(--zloto);
+    font-size: 0.85rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+  .pobieranie {
+    margin-top: 44px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .przycisk {
+    display: inline-block;
+    min-width: 260px;
+    padding: 18px 30px;
+    background: linear-gradient(#241a0e, #171008);
+    border: 1px solid var(--obrys);
+    border-radius: 6px;
+    color: var(--zloto);
+    font-size: 1.1rem;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
+    transition: transform 0.12s ease, border-color 0.12s ease;
+  }
+  .przycisk:hover { transform: translateY(-2px); border-color: var(--zloto); }
+  .przycisk small { display: block; margin-top: 6px; color: var(--tekst-cichy); font-size: 0.8rem; letter-spacing: 0.02em; }
+  .karty {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 40px 24px 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+    text-align: left;
+  }
+  .karta {
+    background: var(--plytka);
+    border: 1px solid rgba(235, 199, 107, 0.18);
+    border-radius: 6px;
+    padding: 22px 24px;
+  }
+  .karta h2 {
+    color: var(--zloto);
+    font-size: 0.95rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .karta p, .karta li { color: var(--tekst-cichy); font-size: 0.95rem; line-height: 1.55; }
+  .karta ol { padding-left: 20px; }
+  .karta li + li { margin-top: 6px; }
+  .karta b { color: var(--tekst); font-weight: normal; }
+  footer {
+    padding: 26px 24px 34px;
+    color: var(--tekst-cichy);
+    font-size: 0.8rem;
+    text-align: center;
+    letter-spacing: 0.04em;
+  }
+</style>
+</head>
+<body>
+
+<div class="scena">
+  <h1>Margonem Survival</h1>
+  <p class="haslo">Przetrwaj noc przy ognisku. Zbuduj obóz, zanim las zbuduje coś na ciebie.</p>
+  <span class="znaczek">Test zamknięty</span>
+
+  <div class="pobieranie">
+    <a class="przycisk" href="https://github.com/Garmory/margonem-survival-www/releases/latest/download/MargonemSurvival-mac.zip">
+      Pobierz na macOS
+      <small>Apple Silicon / Intel · .zip</small>
+    </a>
+    <a class="przycisk" href="https://github.com/Garmory/margonem-survival-www/releases/latest/download/MargonemSurvival-win.zip">
+      Pobierz na Windows
+      <small>Windows 10/11 · 64-bit · .zip</small>
+    </a>
+  </div>
+</div>
+
+<div class="karty">
+  <div class="karta">
+    <h2>Pierwsze uruchomienie</h2>
+    <ol>
+      <li><b>macOS:</b> rozpakuj i kliknij aplikację prawym przyciskiem → <b>Otwórz</b> (wersja testowa nie jest podpisana).</li>
+      <li><b>Windows:</b> rozpakuj cały folder i uruchom <b>MargonemSurvival.exe</b>. Gdy SmartScreen zapyta: <b>Więcej informacji → Uruchom mimo to</b>.</li>
+    </ol>
+  </div>
+  <div class="karta">
+    <h2>Logowanie</h2>
+    <p>Gra loguje przez <b>konto Google</b> — kliknij SIGN IN WITH GOOGLE, dokończ w przeglądarce i wróć do gry. W teście zamkniętym wejdą wyłącznie zaproszone adresy; kolejne uruchomienia logują się same.</p>
+  </div>
+  <div class="karta">
+    <h2>Świat testowy</h2>
+    <p>Gramy na wspólnym świecie testowym w chmurze. Bywa czyszczony bez ostrzeżenia — postacie i obozy mogą zniknąć, a zgłoszenia błędów są na wagę złota. Gdy gra poprosi o aktualizację, pobierz świeżą wersję z tej strony.</p>
+  </div>
+</div>
+
+<footer>Margonem Survival · test zamknięty · świat bywa czyszczony, ognisko zawsze wraca</footer>
+
+</body>
+</html>
