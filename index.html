@@ -41,11 +41,12 @@
     overflow: hidden;
   }
   #iskry {
-    position: absolute;
+    position: fixed;      /* żar niesie się przez CAŁĄ stronę, nie tylko nad ogniskiem */
     inset: 0;
+    z-index: 5;
     pointer-events: none;
   }
-  .scena > *:not(#iskry) { position: relative; z-index: 1; }
+  .scena > * { position: relative; z-index: 1; }
   h1 {
     font-size: clamp(2rem, 6vw, 3.6rem);
     letter-spacing: 0.14em;
@@ -170,36 +171,33 @@
 <footer>Margonem Survival · closed test · the world gets wiped, the campfire always comes back</footer>
 
 <script>
-// ISKRY NAD OGNISKIEM — ten sam przepis co na ekranie wczytywania gry (LoadingScreen):
-// 28 iskier, przewaga pomarańczy (35% żółtych), żar stygnie do czerwieni i gaśnie
-// pod koniec drogi (alfa 1-k²), lekki znos na boki, każda rusza z innej wysokości.
+// ŻAR NA CAŁEJ STRONIE — kolory i zachowanie z ekranu wczytywania gry (LoadingScreen):
+// przewaga pomarańczy (35% żółtych), iskra stygnie do czerwieni i gaśnie pod koniec
+// drogi (alfa 1-k²), lekki znos na boki. Rodzi się w losowych miejscach całego
+// ekranu i unosi ku górze.
 (function () {
   var kanwa = document.getElementById("iskry");
   var ctx = kanwa.getContext("2d");
   var iskry = [];
-  var ILE = 28;
+  var ILE = 90;
 
   function rozmiar() {
-    kanwa.width = kanwa.offsetWidth;
-    kanwa.height = kanwa.offsetHeight;
+    kanwa.width = window.innerWidth;
+    kanwa.height = window.innerHeight;
   }
   window.addEventListener("resize", rozmiar);
   rozmiar();
 
-  // Ognisko na tle (tlo.jpg, center/cover) siedzi mniej więcej tu:
-  function ogniskoX() { return kanwa.width * 0.52; }
-  function ogniskoY() { return kanwa.height * 0.86; }
-
   function los(a, b) { return a + Math.random() * (b - a); }
 
   function odrodz(s) {
-    s.speed = los(46, 120);            // px/s w górę
-    s.life = los(220, 320) / s.speed;  // droga / prędkość, jak sparkRise w grze
+    s.speed = los(28, 95);             // px/s w górę
+    s.life = los(220, 380) / s.speed;  // droga / prędkość, jak sparkRise w grze
     s.drift = los(-34, 34);
     s.size = los(2, 4.4);
     s.age = 0;
-    s.x = ogniskoX() + los(-65, 65);
-    s.y = ogniskoY() - los(-30, 70);
+    s.x = los(0, kanwa.width);
+    s.y = los(kanwa.height * 0.15, kanwa.height * 1.05);
     s.zolta = Math.random() < 0.35;
   }
 
