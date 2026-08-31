@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Margonem Survival</title>
-<meta name="description" content="Margonem Survival — przetrwaj noc przy ognisku. Test zamknięty.">
+<meta name="description" content="Margonem Survival — survive, one more time. Closed test.">
 <link rel="icon" type="image/png" href="favicon.png">
 <style>
   :root {
@@ -26,6 +26,7 @@
     align-items: center;
   }
   .scena {
+    position: relative;
     width: 100%;
     min-height: 100vh;
     background:
@@ -37,7 +38,14 @@
     justify-content: center;
     padding: 48px 24px 64px;
     text-align: center;
+    overflow: hidden;
   }
+  #iskry {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .scena > *:not(#iskry) { position: relative; z-index: 1; }
   h1 {
     font-size: clamp(2rem, 6vw, 3.6rem);
     letter-spacing: 0.14em;
@@ -124,17 +132,18 @@
 <body>
 
 <div class="scena">
+  <canvas id="iskry"></canvas>
   <h1>Margonem Survival</h1>
-  <p class="haslo">Przetrwaj noc przy ognisku. Zbuduj obóz, zanim las zbuduje coś na ciebie.</p>
-  <span class="znaczek">Test zamknięty</span>
+  <p class="haslo">Survive — one more time&hellip;</p>
+  <span class="znaczek">Closed test</span>
 
   <div class="pobieranie">
     <a class="przycisk" href="https://github.com/Garmory/margonem-survival-www/releases/latest/download/MargonemSurvival-mac.zip">
-      Pobierz na macOS
+      Download for macOS
       <small>Apple Silicon / Intel · .zip</small>
     </a>
     <a class="przycisk" href="https://github.com/Garmory/margonem-survival-www/releases/latest/download/MargonemSurvival-win.zip">
-      Pobierz na Windows
+      Download for Windows
       <small>Windows 10/11 · 64-bit · .zip</small>
     </a>
   </div>
@@ -142,23 +151,95 @@
 
 <div class="karty">
   <div class="karta">
-    <h2>Pierwsze uruchomienie</h2>
+    <h2>First launch</h2>
     <ol>
-      <li><b>macOS:</b> rozpakuj i kliknij aplikację prawym przyciskiem → <b>Otwórz</b> (wersja testowa nie jest podpisana).</li>
-      <li><b>Windows:</b> rozpakuj cały folder i uruchom <b>MargonemSurvival.exe</b>. Gdy SmartScreen zapyta: <b>Więcej informacji → Uruchom mimo to</b>.</li>
+      <li><b>macOS:</b> unzip, then right-click the app → <b>Open</b> (the test build is unsigned).</li>
+      <li><b>Windows:</b> unzip the whole folder and run <b>MargonemSurvival.exe</b>. If SmartScreen asks: <b>More info → Run anyway</b>.</li>
     </ol>
   </div>
   <div class="karta">
-    <h2>Logowanie</h2>
-    <p>Gra loguje przez <b>konto Google</b> — kliknij SIGN IN WITH GOOGLE, dokończ w przeglądarce i wróć do gry. W teście zamkniętym wejdą wyłącznie zaproszone adresy; kolejne uruchomienia logują się same.</p>
+    <h2>Signing in</h2>
+    <p>The game signs you in with your <b>Google account</b> — click SIGN IN WITH GOOGLE, finish in the browser and return to the game. During the closed test only invited accounts can enter; next launches sign in on their own.</p>
   </div>
   <div class="karta">
-    <h2>Świat testowy</h2>
-    <p>Gramy na wspólnym świecie testowym w chmurze. Bywa czyszczony bez ostrzeżenia — postacie i obozy mogą zniknąć, a zgłoszenia błędów są na wagę złota. Gdy gra poprosi o aktualizację, pobierz świeżą wersję z tej strony.</p>
+    <h2>Test world</h2>
+    <p>Everyone plays on a shared test world in the cloud. It may be wiped without warning — characters and camps can vanish, and bug reports are worth their weight in gold. When the game asks for an update, grab a fresh build from this page.</p>
   </div>
 </div>
 
-<footer>Margonem Survival · test zamknięty · świat bywa czyszczony, ognisko zawsze wraca</footer>
+<footer>Margonem Survival · closed test · the world gets wiped, the campfire always comes back</footer>
+
+<script>
+// ISKRY NAD OGNISKIEM — ten sam przepis co na ekranie wczytywania gry (LoadingScreen):
+// 28 iskier, przewaga pomarańczy (35% żółtych), żar stygnie do czerwieni i gaśnie
+// pod koniec drogi (alfa 1-k²), lekki znos na boki, każda rusza z innej wysokości.
+(function () {
+  var kanwa = document.getElementById("iskry");
+  var ctx = kanwa.getContext("2d");
+  var iskry = [];
+  var ILE = 28;
+
+  function rozmiar() {
+    kanwa.width = kanwa.offsetWidth;
+    kanwa.height = kanwa.offsetHeight;
+  }
+  window.addEventListener("resize", rozmiar);
+  rozmiar();
+
+  // Ognisko na tle (tlo.jpg, center/cover) siedzi mniej więcej tu:
+  function ogniskoX() { return kanwa.width * 0.52; }
+  function ogniskoY() { return kanwa.height * 0.86; }
+
+  function los(a, b) { return a + Math.random() * (b - a); }
+
+  function odrodz(s) {
+    s.speed = los(46, 120);            // px/s w górę
+    s.life = los(220, 320) / s.speed;  // droga / prędkość, jak sparkRise w grze
+    s.drift = los(-34, 34);
+    s.size = los(2, 4.4);
+    s.age = 0;
+    s.x = ogniskoX() + los(-65, 65);
+    s.y = ogniskoY() - los(-30, 70);
+    s.zolta = Math.random() < 0.35;
+  }
+
+  for (var i = 0; i < ILE; i++) {
+    var s = {};
+    odrodz(s);
+    s.age = Math.random();             // start w rozsypce, nie rządkiem
+    iskry.push(s);
+  }
+
+  var poprzednio = performance.now();
+  function klatka(teraz) {
+    var dt = Math.min(0.05, (teraz - poprzednio) / 1000);
+    poprzednio = teraz;
+    ctx.clearRect(0, 0, kanwa.width, kanwa.height);
+
+    for (var i = 0; i < iskry.length; i++) {
+      var s = iskry[i];
+      s.age += dt / Math.max(0.05, s.life);
+      if (s.age >= 1) { odrodz(s); continue; }
+      s.y -= s.speed * dt;
+      s.x += s.drift * dt;
+
+      var k = s.age;
+      // żółta (255,222,89) / pomarańczowa (255,140,33) -> czerwień żaru (217,51,15)
+      var od = s.zolta ? [255, 222, 89] : [255, 140, 33];
+      var r = od[0] + (217 - od[0]) * k;
+      var g = od[1] + (51 - od[1]) * k;
+      var b = od[2] + (15 - od[2]) * k;
+      var alfa = 1 - k * k;
+      var rozm = s.size * (1 - 0.65 * k);
+
+      ctx.fillStyle = "rgba(" + (r | 0) + "," + (g | 0) + "," + (b | 0) + "," + alfa.toFixed(3) + ")";
+      ctx.fillRect(s.x - rozm / 2, s.y - rozm / 2, rozm, rozm);
+    }
+    requestAnimationFrame(klatka);
+  }
+  requestAnimationFrame(klatka);
+})();
+</script>
 
 </body>
 </html>
